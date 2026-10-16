@@ -3,8 +3,9 @@
 面向不同人群的人工智能基础知识交互科普网页，**由单文件 `index.html` 重构而来的多文件项目**。
 重构只改变代码组织方式：页面、课程、题目、反馈、导航、两种模式、字号切换、学习记录与视觉表现全部与原版一致（对照测试结果见 `模块映射与测试记录.md`）。
 
-> **在线访问（GitHub Pages）**：https://<你的用户名>.github.io/ai-science-learning/
-> 部署方式与后续更新流程见文末「六、部署到 GitHub Pages 与后续更新」；首次部署后请把 `<你的用户名>` 换成实际账号名。
+> **在线访问（GitHub Pages）**：<https://wuzerui45-debug.github.io/ai-science-learning/>
+> 仓库地址：<https://github.com/wuzerui45-debug/ai-science-learning>（Public，分支 `main`）
+> 部署方式与后续更新流程见文末「六、部署到 GitHub Pages 与后续更新」。
 
 ---
 
@@ -133,6 +134,9 @@ ai-science-learning/
 
 ## 六、部署到 GitHub Pages 与后续更新
 
+> 当前状态：**已部署上线** —— 站点 <https://wuzerui45-debug.github.io/ai-science-learning/>，仓库 <https://github.com/wuzerui45-debug/ai-science-learning>。
+> 下面的步骤既是"如何重新做一遍"，也是"换到别的账号时怎么做"。
+
 ### 1. 为什么可以直接部署
 
 - 纯静态站点：只有 HTML、CSS、原生 JavaScript 与内嵌 SVG，没有后端、没有数据库、没有接口调用。
@@ -150,7 +154,7 @@ ai-science-learning/
 | 仓库根目录 | 本目录（`index.html` 就在根目录） |
 | Pages 发布源 | `Deploy from a branch` → 分支 `main` → 目录 `/ (root)` |
 
-### 3. 首次部署（两种方式任选）
+### 3. 首次部署（三种方式任选）
 
 **方式 A：网页上传（不需要安装任何工具）**
 
@@ -161,7 +165,16 @@ ai-science-learning/
 5. 进入仓库 **Settings → Pages**：Source 选 `Deploy from a branch`，Branch 选 `main` + `/ (root)`，点 **Save**。
 6. 等待 1—2 分钟，访问 `https://<你的用户名>.github.io/ai-science-learning/`。
 
-**方式 B：Git 命令行**
+**方式 B：使用仓库自带的发布脚本（不需要安装 git，只用 GitHub CLI）**
+
+```powershell
+# 只需一次性登录：安装 GitHub CLI 后执行 gh auth login，选 “Login with a web browser”
+pwsh -File dev\tools\deploy-to-github.ps1 -Owner <你的用户名> -Repo ai-science-learning
+```
+
+脚本会把本目录整体发布为一次提交；分支已存在时会在最新提交之上追加，不会强推、不会丢历史。
+
+**方式 C：Git 命令行**
 
 ```bash
 cd ai-science-learning
@@ -178,15 +191,28 @@ git push -u origin main
 
 1. 在本地修改 `styles/`、`scripts/` 中的文件（改哪一类见「四、修改代码时的注意事项」）。
 2. 本地测试：双击 `index.html`，或用 `python -m http.server` 起本地服务器，按 `模块映射与测试记录.md` 里的清单过一遍。
-3. 提交并推送（网页上传方式则在仓库页面点 **Add file → Upload files** 覆盖同名文件）：
+3. 用下面任一方式发布（三选一，不要混用）：
 
-   ```bash
-   git add .
-   git commit -m "说明这次改了什么"
-   git push
-   ```
+   | 方式 | 操作 |
+   | --- | --- |
+   | 网页上传 | 仓库页面 → **Add file → Upload files** → 拖入改动过的文件 → **Commit changes** |
+   | 发布脚本 | `pwsh -File dev\tools\deploy-to-github.ps1 -Owner <用户名> -Message "本次改了什么"` |
+   | Git | `git add . && git commit -m "本次改了什么" && git push` |
 
-4. 推送后 GitHub Pages 会自动重新部署（通常 30—60 秒），刷新线上地址即可看到更新。
-5. 如果页面没变化，先按 **Ctrl + F5** 强制刷新，排除浏览器缓存；再在仓库 **Actions** 页面确认部署任务是否成功。
+4. 提交后 GitHub Pages 会自动重新部署（通常 30—90 秒），刷新线上地址即可看到更新。
+5. 如果页面没变化，先按 **Ctrl + F5** 强制刷新排除浏览器缓存，再到仓库 **Actions** 页面确认部署任务是否成功。
 
-> 本项目使用「从分支发布」，因此**没有也不需要** GitHub Actions 工作流；请不要同时启用 Actions 发布方式，避免两套机制互相覆盖。
+> 本项目使用「从分支发布」（`Deploy from a branch`），**没有也不需要** GitHub Actions 工作流；请不要同时启用 Actions 发布方式，避免两套机制互相覆盖。
+
+### 5. 部署后的自检清单
+
+| 检查项 | 期望结果 |
+| --- | --- |
+| 首页能打开 | `https://wuzerui45-debug.github.io/ai-science-learning/` 返回 200，页面完整显示 |
+| 样式与脚本加载 | 浏览器控制台无 404；7 个 CSS、22 个 JS 全部加载（Network 面板可见） |
+| 两种模式切换 | 顶栏「儿童版 / 老年版」切换正常，正文语气与字号随之变化 |
+| 大字阅读 | 老年模式下出现「大字阅读」开关，打开后字号 20px → 25px |
+| 五讲课程与步骤 | 目录进入任一课，上一步/下一步、步骤方块、进度条正常 |
+| 互动与测验 | 生活场景可展开结论，测验能判定对错并出成绩 |
+| 学习进度保存 | 刷新页面后仍停留在原来的课程与步骤（数据存于该域名的 localStorage） |
+| 手机端 | 窄屏下顶栏折叠为「菜单」，各视图无横向滚动 |
