@@ -1,0 +1,103 @@
+/* =============================================================================
+   styles/components.css —— 通用组件（按钮、标签、进度、插图、提示等）
+   来源：原 index.html 内联样式表。拆分时保持选择器、优先级与加载顺序不变。
+   ============================================================================= */
+/* ---------- 3. 通用组件 ---------- */
+/* 按钮：矩形 + 小圆角，取消胶囊与投影 */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .45em;
+  min-height: 2.75rem; padding: .58em 1.15em;
+  font: inherit; font-weight: 600; line-height: 1.35; text-align: center;
+  color: var(--ink); background: var(--paper-2);
+  border: 1px solid var(--rule-2); border-radius: var(--r);
+  cursor: pointer; text-decoration: none;
+  transition: background-color .18s var(--ease), border-color .18s var(--ease), color .18s var(--ease);
+}
+.btn:hover:not(:disabled) { background: var(--paper-3); border-color: var(--ink-3); color: var(--ink); }
+.btn:active:not(:disabled) { background: var(--paper-3); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+.btn--primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+.btn--primary:hover:not(:disabled) { background: var(--blue-deep); border-color: var(--blue-deep); color: #fff; }
+.btn--accent { background: var(--amber); border-color: var(--amber); color: #2C2415; }
+.btn--accent:hover:not(:disabled) { background: #D09238; border-color: #D09238; color: #2C2415; }
+.btn--ghost { background: transparent; }
+.btn--quiet {
+  background: transparent; border-color: transparent; color: var(--blue-deep);
+  text-decoration: underline; text-underline-offset: .22em; padding-left: .4em; padding-right: .4em;
+}
+.btn--quiet:hover:not(:disabled) { background: transparent; color: var(--ink); }
+.btn--sm { min-height: 2.3rem; padding: .4em .85em; font-size: .92rem; }
+.btn--block { width: 100%; }
+.btn-row { display: flex; flex-wrap: wrap; gap: .7rem; align-items: center; }
+.btn-row--between { justify-content: space-between; }
+.btn-row--end { justify-content: flex-end; }
+.btn-row--start { justify-content: flex-start; }
+
+/* 老年模式：更大的操作面积 */
+html[data-mode="senior"] .btn { min-height: 3.2rem; padding: .62em 1.25em; }
+html[data-mode="senior"] .btn--sm { min-height: 2.75rem; }
+
+/* 面板：只在确实需要与正文区分时使用，扁平、无投影 */
+.card {
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: 1.15rem 1.25rem;
+}
+.card--pad-lg { padding: 1.5rem 1.5rem; }
+.card--soft { background: var(--paper-2); }
+.card--brand { background: var(--blue-tint); border-color: var(--rule); }
+.card--accent { background: var(--amber-tint); border-color: var(--rule); }
+.card--flat { background: transparent; border: 0; padding: 0; }
+
+/* 眉标型标签（原胶囊 chip 改为文字标签） */
+.chip {
+  display: inline; background: none; border: 0; padding: 0;
+  font-size: .84rem; color: var(--ink-3); font-weight: 500;
+}
+.chip + .chip::before { content: "·"; margin: 0 .5em; color: var(--rule-2); }
+.chip--accent { color: var(--amber-deep); }
+.chip--green { color: var(--moss); }
+.chip--plain { color: var(--ink-3); }
+
+/* 结论/状态标记：文字 + 符号 + 下划线，不使用底色 */
+.badge {
+  display: inline-flex; align-items: baseline; gap: .35em;
+  font-size: .86rem; font-weight: 600; letter-spacing: .01em;
+  padding: 0 0 .1em; border-bottom: 1px solid currentColor; background: none; border-radius: 0;
+}
+.badge--brand { color: var(--blue-deep); }
+.badge--plain { color: var(--ink-2); }
+.badge--warn { color: var(--amber-deep); }
+.badge--ok { color: var(--moss); }
+
+/* 进度：细线轨道 */
+.progress { height: 3px; background: var(--rule); border-radius: 0; overflow: hidden; }
+.progress__bar { height: 100%; width: 0; background: var(--ink); transition: width .35s var(--ease); }
+html[data-mode="senior"] .progress { height: 5px; }
+.progress-text { font-size: .9rem; color: var(--ink-3); }
+
+/* 右上角注释：左侧竖线 + 浅底，不使用圆角卡片与装饰图标 */
+.note {
+  display: block;
+  padding: .75rem .95rem;
+  border-left: 3px solid var(--rule-2);
+  background: var(--paper-2);
+  border-radius: 0 var(--r-xs) var(--r-xs) 0;
+}
+.note--brand { border-left-color: var(--blue); background: var(--blue-tint); }
+.note--warn { border-left-color: var(--amber); background: var(--amber-tint); }
+.note strong { color: var(--ink); }
+
+/* 插图：直接放在纸面上，只有图注，没有边框和阴影 */
+.figure { margin: 0; }
+.figure .art-slot { display: block; width: 100%; }
+.art-slot svg { display: block; width: 100%; height: auto; }
+.figcap {
+  display: block; margin-top: .6rem; padding-top: .5rem;
+  border-top: 1px solid var(--rule);
+  font-size: .82rem; color: var(--ink-3); line-height: 1.6;
+}
+.figcap b { color: var(--ink-2); font-weight: 600; }
+

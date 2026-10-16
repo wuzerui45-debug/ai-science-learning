@@ -1,0 +1,27 @@
+# 操作系统与编辑器产生的临时文件
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+._*
+
+# 编辑器 / IDE
+.vscode/
+.idea/
+*.sublime-workspace
+*.swp
+*~
+
+# 本地预览与调试产物（不属于网站内容）
+*.log
+*.tmp
+*.bak
+.cache/
+node_modules/
+__pycache__/
+*.pyc
+
+# 本项目不使用构建工具，若日后本地生成了产物目录，请在这里忽略
+dist/
+build/

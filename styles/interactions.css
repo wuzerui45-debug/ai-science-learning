@@ -1,0 +1,101 @@
+/* =============================================================================
+   styles/interactions.css —— 互动练习、小测验、学习完成页、关于项目与页脚
+   来源：原 index.html 内联样式表。拆分时保持选择器、优先级与加载顺序不变。
+   ============================================================================= */
+/* ---------- 8. 互动练习与测验 ---------- */
+.count { font-size: .86rem; color: var(--ink-3); font-weight: 500; }
+
+.scene-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+.scene-item { border-bottom: 1px solid var(--rule); padding: .9rem .2rem; }
+.scene-item__head { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.scene-fig { width: 4.4rem; height: 3.2rem; flex: none; display: grid; place-items: center; }
+.scene-fig svg { display: block; width: 100%; height: auto; }
+.scene-item__name { flex: 1 1 12rem; min-width: 0; font-weight: 600; color: var(--ink); }
+.scene-item__hint { font-size: .86rem; color: var(--ink-3); }
+.scene-item__body { margin-top: .7rem; padding: .1rem 0 .1rem 1rem; border-left: 3px solid var(--rule-2); }
+.scene-item__body p { margin: .3rem 0 0; color: var(--ink-2); }
+.verdict { font-weight: 600; }
+.verdict--brand { color: var(--blue-deep); }
+.verdict--plain { color: var(--ink-2); }
+.verdict--warn { color: var(--amber-deep); }
+.verdict--ok { color: var(--moss); }
+.scene-item[aria-expanded="true"] { background: var(--paper-2); }
+button.scene-item__toggle { flex: none; }
+
+/* 单题块（快速判断 / 小测验） */
+.quiz-item { border-top: 1px solid var(--rule); padding: 1.1rem 0 .3rem; }
+.quiz-item:first-of-type { border-top: 0; }
+.quiz-item__no { font-size: .84rem; letter-spacing: .08em; color: var(--ink-3); }
+.quiz-item__q { font-size: 1.14rem; font-weight: 700; color: var(--ink); margin: .2rem 0 .9rem; font-family: var(--font-serif); }
+.options { display: grid; gap: .55rem; }
+.option {
+  display: flex; gap: .8rem; align-items: flex-start; text-align: left; width: 100%;
+  font: inherit; color: var(--ink); cursor: pointer;
+  background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--r-sm);
+  padding: .75rem .9rem; min-height: 2.9rem;
+  transition: background-color .16s var(--ease), border-color .16s var(--ease);
+}
+.option:hover:not(:disabled) { background: var(--paper-3); border-color: var(--rule-2); }
+.option:disabled { cursor: default; }
+.option__mark {
+  width: 1.65rem; height: 1.65rem; flex: none; display: grid; place-items: center;
+  border: 1px solid var(--rule-2); border-radius: var(--r-xs); background: var(--paper);
+  font-size: .86rem; font-weight: 600; color: var(--ink-2);
+}
+.option__text { flex: 1; min-width: 0; }
+.option__flag { flex: none; font-size: .86rem; font-weight: 600; white-space: nowrap; }
+.option[data-state="correct"] { background: var(--moss-tint); border-color: var(--moss); }
+.option[data-state="correct"] .option__mark { background: var(--moss); border-color: var(--moss); color: #fff; }
+.option[data-state="correct"] .option__flag { color: var(--moss); }
+.option[data-state="wrong"] { background: var(--clay-tint); border-color: var(--clay); }
+.option[data-state="wrong"] .option__mark { background: var(--clay); border-color: var(--clay); color: #fff; }
+.option[data-state="wrong"] .option__flag { color: var(--clay); }
+.option[data-state="muted"] { opacity: .6; }
+
+/* 反馈：左侧竖线，不使用圆角卡片 */
+.feedback { margin-top: .8rem; padding: .7rem .9rem; border-left: 3px solid var(--rule-2); background: var(--paper-2); }
+.feedback__title { font-weight: 700; font-size: .98rem; }
+.feedback p { margin: .25rem 0 0; color: var(--ink-2); }
+.feedback--ok { border-left-color: var(--moss); background: var(--moss-tint); }
+.feedback--ok .feedback__title { color: var(--moss); }
+.feedback--no { border-left-color: var(--clay); background: var(--clay-tint); }
+.feedback--no .feedback__title { color: var(--clay); }
+
+/* 计分 */
+.quiz-meter { display: flex; gap: 2rem; flex-wrap: wrap; margin: 1rem 0 0; }
+.meter__num { display: block; font-family: var(--font-serif); font-size: 1.5rem; font-weight: 700; color: var(--ink); line-height: 1.15; }
+.meter__label { font-size: .84rem; color: var(--ink-3); }
+
+/* ---------- 9. 学习完成 / 关于项目 / 页脚 ---------- */
+.result-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2rem; align-items: center; padding-bottom: 1.4rem; border-bottom: 1px solid var(--rule-2); }
+.score-figure { display: grid; place-items: center; text-align: center; padding-right: 2rem; border-right: 1px solid var(--rule); }
+.score-figure__num { font-family: var(--font-serif); font-size: 3rem; font-weight: 700; line-height: 1; color: var(--ink); }
+.score-figure__label { font-size: .84rem; color: var(--ink-3); margin-top: .35rem; }
+.result-head h1 { margin: .1rem 0 .4rem; }
+.result-block { margin-top: 1.8rem; }
+.summary-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+.summary-list li { display: flex; gap: .8rem; align-items: flex-start; padding: .75rem .2rem; border-bottom: 1px solid var(--rule); }
+.summary-list li::before { content: "✓"; color: var(--moss); font-weight: 700; flex: none; }
+
+.about-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
+.dash-list { list-style: none; padding: 0; margin: 0; }
+.dash-list li { position: relative; padding-left: 1.4em; margin-bottom: .5rem; color: var(--ink-2); }
+.dash-list li::before { content: "—"; position: absolute; left: 0; color: var(--amber-deep); }
+
+.footer { border-top: 1px solid var(--rule-2); background: var(--paper); padding: 1.8rem 0 2.2rem; margin-top: 3rem; }
+.footer__inner { display: flex; gap: 2rem; justify-content: space-between; flex-wrap: wrap; align-items: flex-start; }
+.footer p { margin: 0; color: var(--ink-3); font-size: .86rem; }
+.footer p strong { color: var(--ink-2); font-family: var(--font-serif); font-size: .95rem; }
+.footer nav { display: flex; gap: 1.2rem; flex-wrap: wrap; }
+.footer nav a { color: var(--ink-3); font-size: .88rem; }
+.footer nav a:hover { color: var(--ink); }
+
+.toast {
+  position: fixed; left: 50%; bottom: 1.6rem; transform: translate(-50%, 200%);
+  opacity: 0; visibility: hidden; max-width: min(92vw, 40rem); text-align: center;
+  background: var(--ink); color: var(--paper); padding: .7rem 1.1rem; border-radius: var(--r);
+  font-size: .95rem; font-weight: 500; z-index: 90; pointer-events: none;
+  transition: transform .28s var(--ease), opacity .22s var(--ease), visibility .22s;
+}
+.toast[data-show="true"] { transform: translate(-50%, 0); opacity: 1; visibility: visible; }
+

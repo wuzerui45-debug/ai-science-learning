@@ -1,0 +1,247 @@
+/* =============================================================================
+   styles/layout.css —— 页面版式（顶栏、首页、课程目录、课程学习页）
+   来源：原 index.html 内联样式表。拆分时保持选择器、优先级与加载顺序不变。
+   ============================================================================= */
+/* ---------- 4. 顶栏导航 ---------- */
+.topbar { position: sticky; top: 0; z-index: 40; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.topbar__inner { display: flex; align-items: center; gap: 1rem; min-height: 4.5rem; flex-wrap: wrap; padding: .5rem 0; }
+.brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; color: inherit; }
+.brand__mark { width: 2.3rem; height: 2.3rem; flex: none; }
+.brand__mark svg { display: block; width: 100%; height: auto; }
+.brand__text { display: flex; flex-direction: column; min-width: 0; }
+.brand__name { font-family: var(--font-serif); font-weight: 700; font-size: 1.02rem; color: var(--ink); line-height: 1.3; }
+.brand__sub { font-size: .76rem; color: var(--ink-3); line-height: 1.35; }
+
+.topbar__panel { display: flex; flex: 1 1 auto; min-width: 0; align-items: center; justify-content: flex-end; gap: .6rem 1.2rem; flex-wrap: wrap; }
+
+/* 导航：文字 + 选中下划线，不使用胶囊底色 */
+.nav { display: flex; gap: 1.2rem; margin-left: auto; flex-wrap: wrap; }
+.nav__link {
+  display: inline-block; padding: .35em 0; background: none; border: 0; border-bottom: 2px solid transparent;
+  color: var(--ink-2); text-decoration: none; font-weight: 600; font-size: .96rem;
+}
+.nav__link:hover { color: var(--ink); border-bottom-color: var(--rule-2); }
+.nav__link[aria-current="page"] { color: var(--ink); border-bottom-color: var(--amber); }
+
+.toolbar { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; }
+
+/* 模式切换：分段文字控件 */
+.segmented { display: inline-flex; border: 1px solid var(--rule-2); border-radius: var(--r); overflow: hidden; }
+.segmented__btn {
+  border: 0; background: transparent; cursor: pointer; font: inherit; font-weight: 600; font-size: .9rem;
+  color: var(--ink-2); padding: .5em .9em; display: inline-flex; align-items: center; gap: .35em;
+  border-left: 1px solid var(--rule);
+}
+.segmented__btn:first-child { border-left: 0; }
+.segmented__btn:hover { background: var(--paper-3); color: var(--ink); }
+.segmented__btn[aria-pressed="true"] { background: var(--blue); color: #fff; }
+html[data-mode="senior"] .segmented__btn { font-size: .95rem; padding: .55em 1em; }
+
+/* 大字阅读开关：方形开关，不使用胶囊 */
+.switch {
+  display: inline-flex; align-items: center; gap: .5rem; cursor: pointer;
+  border: 1px solid var(--rule-2); background: var(--paper-2); border-radius: var(--r);
+  padding: .48em .9em; font: inherit; font-weight: 600; font-size: .9rem; color: var(--ink-2);
+}
+.switch:hover { background: var(--paper-3); color: var(--ink); }
+.switch[aria-pressed="true"] { background: var(--amber-tint); border-color: var(--amber); color: var(--amber-deep); }
+.switch__dot { width: .72rem; height: .72rem; border-radius: var(--r-xs); background: none; border: 1px solid var(--rule-2); flex: none; }
+.switch[aria-pressed="true"] .switch__dot { background: var(--amber); border-color: var(--amber); }
+
+/* 手机端菜单按钮 */
+.menu-btn {
+  display: none; align-items: center; gap: .5rem; margin-left: auto;
+  padding: .5em .9em; min-height: 2.75rem; font: inherit; font-weight: 600; font-size: .95rem;
+  color: var(--ink); background: var(--paper-2); border: 1px solid var(--rule-2); border-radius: var(--r); cursor: pointer;
+}
+.menu-btn:hover { background: var(--paper-3); }
+.menu-btn[aria-expanded="true"] { background: var(--blue-tint); border-color: var(--blue); color: var(--blue-deep); }
+.menu-btn__icon { display: inline-flex; flex-direction: column; gap: 4px; width: 16px; flex: none; }
+.menu-btn__icon span { display: block; height: 1.5px; background: currentColor; }
+
+/* ---------- 5. 首页（编辑式头版） ---------- */
+.view { padding: 2.4rem 0 3.2rem; }
+.view[hidden] { display: none; }
+
+/* 首页主视觉：问题标题 + 引题 + 简短答案，右侧/下方为解释图 */
+.masthead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr); gap: 2.4rem; align-items: start; padding-top: .6rem; }
+.masthead__main { min-width: 0; }
+.masthead__title { font-size: clamp(1.9rem, 3.9vw, 2.6rem); line-height: 1.14; margin: .1rem 0 .7rem; }
+.masthead__intro { font-size: 1.02rem; color: var(--ink-2); }
+.masthead__points { list-style: none; margin: 1.1rem 0 0; padding: 0; border-top: 1px solid var(--rule); }
+.masthead__points li { position: relative; padding: .6rem 0 .6rem 1.5em; border-bottom: 1px solid var(--rule); color: var(--ink-2); }
+.masthead__points li::before { content: "—"; position: absolute; left: 0; color: var(--amber-deep); }
+.masthead__aside { min-width: 0; }
+.masthead .figure { margin: 0; }
+
+/* 区块标题：左侧竖线，编辑式小标题 */
+.block { margin-top: 2.4rem; }
+.block--tight { margin-top: 1.8rem; }
+.block__head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: .9rem; }
+.block__head h2 { margin: 0; font-size: 1.22rem; }
+.block__head p { margin: 0; color: var(--ink-3); font-size: .92rem; }
+.block__title { display: flex; align-items: baseline; gap: .7rem; flex-wrap: wrap; margin: 0 0 .8rem; font-size: 1.22rem; }
+.block__intro { color: var(--ink-2); margin-bottom: 1rem; }
+
+/* 讲次索引：编号 + 标题 + 说明，细线分隔，不使用卡片 */
+.index-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+.index-item {
+  display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) auto; gap: 1rem; align-items: center;
+  width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer;
+  background: none; border: 0; border-bottom: 1px solid var(--rule); padding: .95rem .2rem;
+  transition: background-color .16s var(--ease);
+}
+.index-item:hover { background: var(--paper-2); }
+.index-item__no { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 700; color: var(--amber-deep); line-height: 1.1; }
+.index-item__body { min-width: 0; }
+.index-item__title { display: block; font-family: var(--font-serif); font-weight: 700; font-size: 1.1rem; color: var(--ink); }
+.index-item__meta { display: block; font-size: .86rem; color: var(--ink-3); margin-top: .15rem; }
+.index-item__state { font-size: .86rem; color: var(--ink-3); white-space: nowrap; }
+.index-item[data-state="done"] .index-item__state { color: var(--moss); }
+.index-item[data-state="doing"] .index-item__state { color: var(--amber-deep); }
+.block__foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+
+/* 两种读法：左竖线编辑块，尺寸与视觉权重不同 */
+.reads { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; }
+.read { border-left: 3px solid var(--rule-2); padding: .2rem 0 .2rem 1.1rem; }
+.read--kid { border-left-color: var(--amber); }
+.read--senior { border-left-color: var(--blue); }
+.read__label { display: block; font-size: .8rem; letter-spacing: .1em; color: var(--ink-3); margin-bottom: .3rem; }
+.read h3 { font-size: 1.24rem; margin-bottom: .4rem; }
+.read p { color: var(--ink-2); }
+.read__points { list-style: none; padding: 0; margin: .6rem 0 1rem; }
+.read__points li { position: relative; padding-left: 1.1em; color: var(--ink-2); font-size: .94rem; }
+.read__points li::before { content: "—"; position: absolute; left: 0; color: var(--ink-3); }
+
+/* 三步学习方式：两列错落排布（首项通栏），不使用三列等宽卡片 */
+.steps-list {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.3rem 2.4rem;
+}
+.steps-list li { border-top: 1px solid var(--rule-2); padding-top: .7rem; }
+.steps-list li:first-child { grid-column: 1 / -1; }
+.steps-list__no { display: block; font-family: var(--font-serif); font-size: 1.1rem; color: var(--amber-deep); }
+.steps-list h3 { font-size: 1rem; margin: .2rem 0 .2rem; }
+.steps-list p { margin: 0; color: var(--ink-3); font-size: .9rem; }
+
+/* ---------- 6. 课程目录 ---------- */
+.page-head { padding-bottom: 1.4rem; border-bottom: 1px solid var(--rule-2); }
+.page-head h1 { margin: .1rem 0 .5rem; }
+.meta-row { font-size: .88rem; color: var(--ink-3); margin-top: .8rem; }
+.meta-row b { color: var(--ink-2); font-weight: 600; }
+.mode-inline { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin-top: 1rem; }
+.mode-inline__label { font-size: .86rem; color: var(--ink-3); }
+
+.lesson-list { list-style: none; margin: 0; padding: 0; }
+.lesson-item {
+  display: grid; grid-template-columns: 3.6rem minmax(0, 1fr) auto; gap: 1.2rem; align-items: start;
+  padding: 1.4rem .2rem; border-bottom: 1px solid var(--rule);
+}
+.lesson-item__no { font-family: var(--font-serif); font-size: 2rem; font-weight: 700; color: var(--amber-deep); line-height: 1; }
+.lesson-item__body { min-width: 0; }
+.lesson-item__body h2 { font-size: 1.22rem; margin: 0 0 .3rem; }
+.lesson-item__body p { margin: 0 0 .5rem; color: var(--ink-2); }
+.lesson-item__meta { font-size: .86rem; color: var(--ink-3); }
+.lesson-item__meta .badge { font-size: .86rem; }
+.lesson-item__action { display: flex; flex-direction: column; gap: .5rem; align-items: stretch; min-width: 9rem; }
+.lesson-item__state { font-size: .84rem; color: var(--ink-3); text-align: center; }
+html[data-mode="senior"] .lesson-item__action { min-width: 11rem; }
+
+/* ---------- 7. 课程学习页 ---------- */
+.crumb { font-size: .86rem; color: var(--ink-3); margin: 0 0 .5rem; }
+.crumb a { color: var(--ink-3); }
+.crumb a:hover { color: var(--ink); }
+
+.lesson-head { border-bottom: 1px solid var(--rule-2); padding-bottom: .9rem; }
+.lesson-head__row { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.2rem; flex-wrap: wrap; }
+.lesson-head h1 { margin: 0; display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; }
+.lesson-head__no { font-size: .5em; color: var(--amber-deep); letter-spacing: .08em; }
+.lesson-head__tools { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; }
+.lesson-progress { display: flex; align-items: center; gap: .9rem; margin-top: .9rem; }
+.lesson-progress__text { font-size: .88rem; color: var(--ink-3); white-space: nowrap; }
+.lesson-progress__track { flex: 1 1 auto; height: 3px; background: var(--rule); min-width: 4rem; }
+.lesson-progress__bar { display: block; height: 100%; background: var(--ink); }
+
+.lesson-body { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 2.2rem; align-items: start; margin-top: 1.6rem; }
+.lesson-aside { position: sticky; top: 5.4rem; }
+.lesson-aside .figure + .figure { margin-top: 1.4rem; }
+
+/* 讲解版式按知识类型分组：五讲不套用同一种图文关系（概念/流程/列举/对比/守则）
+   行宽用 em（随字号层级变化），插图另加 px 上限，避免大字模式下插图被放得过大 */
+.lesson-body--stack { grid-template-columns: minmax(0, 1fr); gap: 1.9rem; }
+.lesson-body--stack .prose { max-width: min(42em, 640px); }
+.lesson-body--stack .lesson-aside { position: static; max-width: min(42em, 640px); }
+.lesson-body--mirror { grid-template-columns: minmax(0, .95fr) minmax(0, 1.1fr); }
+.lesson-body--mirror .lesson-aside { position: static; }
+/* 夹排图：插图排进正文，行宽收窄到易读区间 */
+.prose--flow { max-width: min(46em, 660px); }
+.prose--flow > *:not(.figure) { max-width: min(34em, 620px); }
+.prose > .figure { margin: 1.5rem 0 .2rem; max-width: min(36em, 640px); }
+/* 列举类课程：正文分两栏，插图随文排进栏内 */
+.prose--duo { max-width: min(52em, 900px); }
+.lesson-body--stack .prose--duo { max-width: min(52em, 900px); }
+.prose--duo > .figure { max-width: none; }
+@media (min-width: 1081px) {
+  html:not(.big-text) .prose--duo { column-count: 2; column-gap: 2.4rem; }
+  html:not(.big-text) .prose--duo > * { break-inside: avoid; }
+}
+/* 守则类课程：正文单栏 + 右侧页边注 + 文末插图 */
+.lesson-body--end { grid-template-columns: minmax(0, min(42em, 640px)) minmax(0, 1fr); gap: 1.9rem 2.4rem; }
+.lesson-body--end .prose { grid-column: 1; grid-row: 1; max-width: none; }
+.lesson-body--end .lesson-aside { grid-column: 1; grid-row: 2; position: static; max-width: min(42em, 640px); }
+.takeaway--note { grid-column: 2; grid-row: 1; align-self: start; margin-top: 0; max-width: 22em; }
+.takeaway--foot { max-width: min(42em, 640px); margin-top: 1.6rem; }
+
+/* 正文：直接排版，不套卡片 */
+.prose { max-width: 38em; }
+.prose__title { font-size: 1.5rem; margin-bottom: .5rem; }
+.prose__lead { font-size: 1.1rem; color: var(--ink); }
+.points { list-style: none; margin: 1rem 0 0; padding: 0; }
+.points li { position: relative; padding-left: 1.5em; margin-bottom: .5rem; color: var(--ink-2); }
+.points li::before { content: "—"; position: absolute; left: 0; color: var(--amber-deep); }
+
+/* 生活案例：左侧竖线 + 浅底 */
+.case { margin-top: 1.2rem; padding: .2rem 0 .2rem 1rem; border-left: 3px solid var(--amber); background: var(--amber-tint); padding: .8rem .95rem .8rem 1rem; }
+.case__label { display: block; font-size: .8rem; letter-spacing: .1em; color: var(--amber-deep); margin-bottom: .25rem; }
+.case p { margin: 0; color: var(--ink-2); }
+.ask { margin-top: 1.2rem; padding: .8rem .95rem; border-left: 3px solid var(--blue); background: var(--blue-tint); }
+.ask__label { display: block; font-size: .8rem; letter-spacing: .1em; color: var(--blue-deep); margin-bottom: .25rem; }
+.ask p { margin: 0; color: var(--ink-2); }
+
+/* 儿童模式的机器人引导：降低权重，只作为一句对话 */
+.mascot { display: flex; gap: .8rem; align-items: flex-start; margin-top: 1.2rem; }
+.mascot__art { width: 3rem; height: 3rem; flex: none; opacity: .9; }
+.mascot__art svg { display: block; width: 100%; height: auto; }
+.mascot .ask { margin-top: 0; flex: 1; }
+
+/* 图注之外的知识要点框 */
+.takeaway { margin-top: 1.2rem; border-top: 1px solid var(--rule-2); padding-top: .7rem; }
+.takeaway strong { display: block; font-size: .84rem; letter-spacing: .08em; color: var(--ink-3); font-weight: 600; margin-bottom: .25rem; }
+
+/* 列表型区块：去掉 li 默认间距，改为细线分隔 */
+.index-list > li, .lesson-list > li, .scene-list > li, .summary-list > li, .steps-list > li { margin: 0; }
+
+/* 儿童模式的场景条目本身就是按钮：整行可点 */
+.scene-item__toggle {
+  display: block; width: 100%; text-align: left; background: none; border: 0;
+  padding: 0; font: inherit; color: inherit; cursor: pointer;
+}
+.scene-item__toggle:hover .scene-item__name { color: var(--blue-deep); }
+.scene-item__toggle:hover .scene-item__hint { color: var(--ink-2); }
+
+/* 步骤与操作 */
+.lesson-actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 1.8rem; padding-top: 1rem; border-top: 1px solid var(--rule); }
+.step-dots { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
+.step-dot {
+  width: 2.1rem; height: 2.1rem; display: grid; place-items: center; padding: 0;
+  background: var(--paper-2); border: 1px solid var(--rule-2); border-radius: var(--r-sm);
+  color: var(--ink-2); font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer;
+}
+.step-dot:hover { background: var(--paper-3); color: var(--ink); }
+.step-dot[data-visited="true"] { border-color: var(--ink-3); color: var(--ink); }
+.step-dot[aria-current="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+html[data-mode="senior"] .step-dot { width: 2.5rem; height: 2.5rem; font-size: .95rem; }
+
+.lesson-cta { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 1.4rem; padding-top: 1rem; border-top: 1px solid var(--rule); }
+.lesson-cta__tip { color: var(--ink-3); font-size: .9rem; }
+

@@ -1,0 +1,80 @@
+/* =============================================================================
+   styles/variables.css —— 设计变量（:root 令牌）
+   来源：原 index.html 内联样式表。拆分时保持选择器、优先级与加载顺序不变。
+   ============================================================================= */
+/* =====================================================================
+   《一份知识，两种表达》—— 编辑式科普设计
+   视觉方向：科普刊物 / 学习手册的排版语言
+     · 暖纸白底色 + 细线分隔 + 直接排版的知识正文
+     · 只有标题、少量面板和操作控件有边框，正文不再套卡片
+     · 插图承担知识解释功能，右侧/下方配图注
+   样式组织：
+     1. 设计变量      2. 基础排版      3. 通用组件
+     4. 顶栏导航      5. 首页          6. 课程目录
+     7. 课程学习页    8. 互动练习与测验 9. 学习完成 / 关于 / 页脚
+    10. 响应式（平板 / 手机 / 小屏）
+   ===================================================================== */
+
+/* ---------- 1. 设计变量 ---------- */
+:root {
+  --fs: 16.5px;
+
+  /* 纸面与墨色 */
+  --paper: #F5F0E6;          /* 页面底色：暖纸白 */
+  --paper-2: #FBF8F1;        /* 局部浅底 */
+  --paper-3: #EDE6D8;        /* 略深的纸色（选中、底纹） */
+  --ink: #293D32;            /* 主文字：深墨绿 */
+  --ink-2: #4C5F53;          /* 次要文字 */
+  --ink-3: #7C8A80;          /* 辅助说明 */
+
+  /* 细线与强调色 */
+  --rule: rgba(41, 61, 50, .18);
+  --rule-2: rgba(41, 61, 50, .34);
+  --blue: #416BA4;           /* 交互强调 */
+  --blue-deep: #2F5285;
+  --blue-tint: #E8EEF6;
+  --amber: #DDA24D;          /* 局部强调：课程编号、重点标注 */
+  --amber-deep: #9C6716;
+  --amber-tint: #F7EBD8;
+  --moss: #3F6B4F;           /* 正确 */
+  --moss-tint: #E5EDE6;
+  --clay: #A8523C;           /* 错误 */
+  --clay-tint: #F5E5E0;
+
+  /* 形状：一律使用小圆角（最大 8px），取消胶囊与悬浮投影 */
+  --r-xs: 3px;
+  --r-sm: 4px;
+  --r: 6px;
+  --r-lg: 8px;
+
+  --font-sans: "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", "Source Han Sans SC",
+               "Noto Sans SC", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: Georgia, "Times New Roman", "Songti SC", "Source Han Serif SC",
+                "Noto Serif SC", "SimSun", serif;
+
+  --maxw: 1140px;
+  --gap: 1.15rem;
+  --ease: cubic-bezier(.2, .7, .3, 1);
+
+  /* 插画配色别名：插画库按语义引用这些变量，随模式自动切换 */
+  --card: var(--paper-2);
+  --bg-soft: var(--paper-2);
+  --art-1: var(--blue-tint);
+  --art-2: var(--amber-tint);
+  --art-3: var(--moss-tint);
+  --art-line: var(--ink-2);
+  --art-ink: var(--ink);
+  --brand: var(--blue);
+  --accent: var(--amber);
+  --green: var(--moss);
+  --rose: var(--clay);
+  --line: var(--rule);
+  --line-strong: var(--rule-2);
+  --radius: var(--r);
+  --radius-sm: var(--r-sm);
+  --radius-lg: var(--r-lg);
+  --shadow: none;
+  --shadow-sm: none;
+  --shadow-lg: none;
+}
+

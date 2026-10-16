@@ -1,0 +1,38 @@
+/* =============================================================================
+   styles/modes.css —— 两种模式与大字阅读的主题令牌
+   来源：原 index.html 内联样式表。拆分时保持选择器、优先级与加载顺序不变。
+   ============================================================================= */
+/* 儿童探索模式：纸面不变，强调色偏暖、正文略小 */
+html[data-mode="child"] {
+  --fs: 16.5px;
+  --blue: #3F6EA8;
+  --amber: #DFA24A;
+  --amber-deep: #9A6412;
+}
+
+/* 老年友好模式：更高对比、更大字号与间距 */
+html[data-mode="senior"] {
+  --fs: 20px;
+  --paper: #F6F1E7;
+  --paper-2: #FDFBF6;
+  --paper-3: #EBE3D3;
+  --ink: #1B2A21;
+  --ink-2: #3C4C41;
+  --ink-3: #637064;
+  --rule: rgba(27, 42, 33, .26);
+  --rule-2: rgba(27, 42, 33, .46);
+  --blue: #2F5688;
+  --blue-deep: #24456E;
+  --blue-tint: #E4EAF3;
+  --amber: #C8862A;
+  --amber-deep: #7F5310;
+  --moss: #2E5A3E;
+  --clay: #8F3E29;
+  --maxw: 1160px;
+  --gap: 1.4rem;
+}
+
+/* 大字阅读：在老年模式基础上进一步放大 */
+html.big-text { --fs: 25px; }
+html.big-text .shell { --maxw: 1080px; }
+

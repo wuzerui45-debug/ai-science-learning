@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-mode="child">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一份知识，两种表达 · 人工智能科普课堂</title>
+<meta name="description" content="面向儿童与老年人的双模式人工智能基础知识交互科普网页：五节课程、生活场景判断、互动答题与学习进度记录。">
+<meta name="author" content="《一份知识，两种表达》科普交互作品">
+  <!-- 样式按“令牌 → 模式 → 基础 → 组件 → 版式 → 互动 → 响应式”的顺序加载，与原内联样式表顺序一致 -->
+  <link rel="stylesheet" href="styles/variables.css">
+  <link rel="stylesheet" href="styles/modes.css">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/interactions.css">
+  <link rel="stylesheet" href="styles/responsive.css">
+</head>
+
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+
+<!-- ===================== 顶部导航栏 ===================== -->
+<header class="topbar">
+  <div class="shell topbar__inner">
+    <a class="brand" href="#/home">
+      <span class="brand__mark" data-art="logo" aria-hidden="true"></span>
+      <span class="brand__text">
+        <span class="brand__name">一份知识，两种表达</span>
+        <span class="brand__sub">让科学知识，被不同的人轻松理解</span>
+      </span>
+    </a>
+
+    <button type="button" class="menu-btn" id="menuBtn" data-action="toggle-menu"
+            aria-expanded="false" aria-controls="topbarPanel">
+      <span class="menu-btn__icon" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span class="menu-btn__label">菜单</span>
+    </button>
+
+    <!-- 电脑端：右侧横排；手机端：点击「菜单」按钮展开或收起 -->
+    <div class="topbar__panel" id="topbarPanel" data-open="false">
+      <nav class="nav" aria-label="主导航">
+        <a class="nav__link" href="#/home" data-nav="home">首页</a>
+        <a class="nav__link" href="#/courses" data-nav="courses">科普课堂</a>
+        <a class="nav__link" href="#/about" data-nav="about">关于项目</a>
+      </nav>
+
+      <div class="toolbar">
+        <div class="segmented" role="group" aria-label="表达模式切换">
+          <button type="button" class="segmented__btn" data-action="set-mode" data-mode="child" aria-pressed="true">儿童版</button>
+          <button type="button" class="segmented__btn" data-action="set-mode" data-mode="senior" aria-pressed="false">老年版</button>
+        </div>
+        <button type="button" class="switch" id="bigTextBtn" data-action="toggle-bigtext" aria-pressed="false" hidden>
+          <span class="switch__dot" aria-hidden="true"></span><span>大字阅读</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+
+  <!-- ===================== 首页：编辑式头版 ===================== -->
+  <section class="view" id="view-home" data-view="home">
+    <div class="shell">
+
+      <div class="masthead">
+        <div class="masthead__main">
+          <span class="kicker">人工智能基础科普 · 五讲</span>
+          <h1 class="masthead__title">机器是怎么<br>认出一只猫的？</h1>
+          <p class="masthead__intro">先给一个简短的答案，再用五讲把这件事讲清楚：机器不是靠人把规则写死，而是从大量例子里总结出规律。</p>
+          <ul class="masthead__points">
+            <li>它认出的不是「猫」这个概念，而是一堆相似特征的统计结果。</li>
+            <li>所以它也会认错，会受例子的影响——第四讲专门讲这件事。</li>
+            <li>它也常常帮得上忙：认脸、听写、看片子、找路——第三讲讲用途。</li>
+          </ul>
+        </div>
+        <div class="masthead__aside">
+          <figure class="figure">
+            <div class="art-slot" data-art="hero" role="img" aria-label="插图：机器从大量猫的照片中找出共同特征，再对新照片作出判断"></div>
+            <figcaption class="figcap"><b>图 1</b> · 从样本到判断：机器看过大量猫的照片后找出共同特征，再对没见过的照片给出判断</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <hr class="rule">
+
+      <section class="block" aria-labelledby="home-index-title">
+        <div class="block__head">
+          <h2 id="home-index-title">五讲目录</h2>
+          <div class="btn-row">
+            <button type="button" class="btn btn--primary btn--sm" data-action="open-lesson" data-lesson="1">从第一课开始</button>
+            <a class="btn btn--ghost btn--sm" href="#/courses">打开课程目录</a>
+          </div>
+        </div>
+        <ol class="index-list" id="homeIndex"></ol>
+        <div class="block__foot">
+          <p class="progress-text" id="homeProgressText">还没有开始学习。</p>
+          <button type="button" class="btn btn--quiet btn--sm" data-action="reset-progress">清空学习记录</button>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section class="block" id="modes" aria-labelledby="home-reads-title">
+        <div class="block__head">
+          <h2 id="home-reads-title">两种读法</h2>
+          <p id="currentModeChip"></p>
+        </div>
+        <div class="reads">
+          <article class="read read--kid">
+            <span class="read__label">儿童探索模式 · 适合 6–12 岁</span>
+            <h3>小小 AI 探索家</h3>
+            <p>用生活故事、翻卡片和互动问答，跟着机器人「小问」一步步弄懂人工智能。</p>
+            <ul class="read__points">
+              <li>句子短、例子多，一看就懂</li>
+              <li>答对即时鼓励，答错也有提示</li>
+              <li>一次只讲一个重点</li>
+            </ul>
+            <button type="button" class="btn btn--accent" data-action="enter-mode" data-mode="child">进入儿童模式</button>
+          </article>
+          <article class="read read--senior">
+            <span class="read__label">老年友好模式 · 大字 · 高对比</span>
+            <h3>轻松学 AI</h3>
+            <p>用清晰易读的文字、熟悉的生活案例和简单的操作，一步一步认识人工智能。</p>
+            <ul class="read__points">
+              <li>正文不小于 20px，可一键放大</li>
+              <li>按钮更大、操作更少</li>
+              <li>不限时、不自动跳转</li>
+            </ul>
+            <button type="button" class="btn btn--primary" data-action="enter-mode" data-mode="senior">进入友好模式</button>
+          </article>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section class="block block--tight" aria-labelledby="home-how-title">
+        <div class="block__head">
+          <h2 id="home-how-title">一节课怎么学</h2>
+        </div>
+        <ol class="steps-list">
+          <li>
+            <span class="steps-list__no">01</span>
+            <h3>读讲解</h3>
+            <p>分四步讲清一个知识点，每一步配一张解释图和一段生活案例。</p>
+          </li>
+          <li>
+            <span class="steps-list__no">02</span>
+            <h3>做判断</h3>
+            <p>判断六个生活场景有没有用到人工智能，再答一道快速判断题。</p>
+          </li>
+          <li>
+            <span class="steps-list__no">03</span>
+            <h3>答测验</h3>
+            <p>三道小题检查理解程度，答完立刻看到成绩和本讲知识总结。</p>
+          </li>
+        </ol>
+      </section>
+
+      <p class="footnote">内容说明：本作品的讲解、案例与题目都是事先编写好的固定科普内容，页面不联网、不调用任何外部人工智能接口；全部插画由 CSS 与内嵌 SVG 绘制；学习进度保存在本机浏览器中，不涉及账号与个人信息。</p>
+
+    </div>
+  </section>
+
+  <!-- ===================== 课程目录 ===================== -->
+  <section class="view" id="view-courses" data-view="courses" hidden>
+    <div class="shell" id="coursesBody"></div>
+  </section>
+
+  <!-- ===================== 课程学习页（讲解 / 互动 / 测验） ===================== -->
+  <section class="view" id="view-lesson" data-view="lesson" hidden>
+    <div class="shell" id="lessonBody"></div>
+  </section>
+
+  <!-- ===================== 学习完成页 ===================== -->
+  <section class="view" id="view-result" data-view="result" hidden>
+    <div class="shell" id="resultBody"></div>
+  </section>
+
+  <!-- ===================== 关于项目 ===================== -->
+  <section class="view" id="view-about" data-view="about" hidden>
+    <div class="shell">
+      <header class="page-head">
+        <span class="kicker">关于项目</span>
+        <h1>一份知识，两种表达</h1>
+        <p class="lead" style="max-width:52em">一个面向不同人群的人工智能基础知识交互科普原型：儿童探索模式与老年友好模式共享同一套科学内容，用不同的语言、字号、颜色和交互方式重新表达。</p>
+      </header>
+
+      <section class="block">
+        <div class="block__head"><h2>项目设计理念</h2></div>
+        <div class="prose" style="max-width:46em">
+          <p>「一份知识，两种表达」关注不同人群在理解科学知识时的差异。项目以人工智能基础知识为内容，通过儿童探索模式和老年友好模式，将同一知识体系转化为不同的学习体验。</p>
+          <p>知识本身不需要被简化成两个版本，需要改变的是讲述方式：给孩子的版本多用生活比喻和短句子，给长辈的版本用更大的字、更高的对比和更慢的节奏。两种表达指向同一个科学结论，也共享同一份知识框架。</p>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section class="block">
+        <div class="block__head"><h2>项目设计目标</h2></div>
+        <div class="about-cols">
+          <ul class="dash-list">
+            <li>降低人工智能基础知识的理解门槛，让没有技术背景的人也能听懂。</li>
+            <li>通过互动学习增强知识理解，把「看」变成「判断」和「回答」。</li>
+            <li>关注儿童的认知特点：短句子、多比喻、即时鼓励、一次一个重点。</li>
+          </ul>
+          <ul class="dash-list">
+            <li>关注老年人的阅读和操作体验：大字、高对比、大按钮、不限时。</li>
+            <li>探索数字媒体技术在科普教育中的应用，验证双模式设计的可行性。</li>
+            <li>坚持科学准确：不夸大人工智能的能力，不把它描述成有思想的存在。</li>
+          </ul>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section class="block">
+        <div class="block__head">
+          <h2>两种模式的差异</h2>
+          <p>不只是换颜色，从文字到交互都有区别</p>
+        </div>
+        <div class="about-cols">
+          <div>
+            <h3>儿童探索模式</h3>
+            <ul class="dash-list">
+              <li>引导角色「小问」用一句对话提出思考问题。</li>
+              <li>每个知识步骤只讲一个重点，句子短、比喻多。</li>
+              <li>场景练习是「翻卡片」的探索形式，点开才知道答案。</li>
+              <li>测验一次只出现一道题，答对即时得到鼓励。</li>
+            </ul>
+          </div>
+          <div>
+            <h3>老年友好模式</h3>
+            <ul class="dash-list">
+              <li>正文默认 20px，可用「大字阅读」放大到 25px。</li>
+              <li>深色文字配暖纸白底，细线与边框更清楚，按钮更大。</li>
+              <li>场景练习以清单列出，结论用文字写明「用 / 没用 / 看情况」。</li>
+              <li>测验三道题一次列清，不限制时间、不自动跳转。</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section class="block">
+        <div class="block__head"><h2>内容与技术说明</h2></div>
+        <ul class="dash-list">
+          <li><strong>内容来源：</strong>课程文字、生活案例与题目均由作者根据人工智能基础知识编写，属于预设科普内容，页面上不进行任何实时内容生成。</li>
+          <li><strong>技术实现：</strong>单个 HTML 文件，使用 HTML、CSS 与原生 JavaScript，不使用任何前端框架，不需要后端、数据库或登录注册。</li>
+          <li><strong>离线可用：</strong>不使用外部图片、外部字体和外部脚本，全部视觉元素由 CSS 与内嵌 SVG 绘制，断网状态下也能正常打开。</li>
+          <li><strong>进度保存：</strong>学习进度保存在当前浏览器的 localStorage 中，不涉及账号和服务器，也不会上传任何个人信息。</li>
+          <li><strong>科学表述：</strong>课程中不使用「人工智能有思想、有感情」这类说法，统一描述为「从大量例子中总结规律」，并明确说明它可能出错。</li>
+        </ul>
+      </section>
+
+      <div class="btn-row" style="margin-top:2rem">
+        <a class="btn btn--primary" href="#/courses">去看看五节课程</a>
+        <a class="btn btn--ghost" href="#/home">返回首页</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===================== 页脚 ===================== -->
+<footer class="footer">
+  <div class="shell footer__inner">
+    <div>
+      <p><strong>一份知识，两种表达 · 人工智能科普课堂</strong></p>
+      <p>让科学知识，被不同的人轻松理解。</p>
+      <p>数字媒体创意设计竞赛科普交互原型 · 内容为预设科普文字，不调用外部人工智能接口。</p>
+    </div>
+    <nav aria-label="页脚导航">
+      <a href="#/home">首页</a>
+      <a href="#/courses">科普课堂</a>
+      <a href="#/about">关于项目</a>
+    </nav>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- 脚本按依赖顺序加载：数据 → 状态/服务 → 组件 → 路由/交互 → 入口 -->
+  <script src="scripts/data/courses-1.js"></script>
+  <script src="scripts/data/courses-2.js"></script>
+  <script src="scripts/data/ui-text.js"></script>
+  <script src="scripts/data/art.js"></script>
+  <script src="scripts/data/captions.js"></script>
+  <script src="scripts/state/app-state.js"></script>
+  <script src="scripts/utils/dom.js"></script>
+  <script src="scripts/utils/text.js"></script>
+  <script src="scripts/services/storage.js"></script>
+  <script src="scripts/services/progress.js"></script>
+  <script src="scripts/state/session.js"></script>
+  <script src="scripts/components/navigation.js"></script>
+  <script src="scripts/components/app-shell.js"></script>
+  <script src="scripts/components/figure.js"></script>
+  <script src="scripts/components/home-view.js"></script>
+  <script src="scripts/components/lesson-view.js"></script>
+  <script src="scripts/components/practice.js"></script>
+  <script src="scripts/components/quiz.js"></script>
+  <script src="scripts/components/result-view.js"></script>
+  <script src="scripts/router.js"></script>
+  <script src="scripts/actions.js"></script>
+  <script src="scripts/main.js"></script>
+</body>
+</html>
