@@ -1,0 +1,78 @@
+/* =============================================================================
+   styles/splash.css —— 开屏「知识点亮」的视觉层
+
+   只负责开屏遮罩的外观，动画由 scripts/animations/splash.js 用 GSAP 驱动。
+   配色全部复用现有设计令牌（--ink 背景、--paper 文字、--amber 关键节点），
+   因此儿童版 / 老年版的色值会自动跟随，不需要维护第二套颜色。
+
+   无 JS 时：<head> 里的 <noscript> 会隐藏 #splash，页面直接显示；
+   关闭动画时：脚本会立即移除 #splash（见 splash.js 的 skip 判定）。
+   ============================================================================= */
+
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 120;                    /* 高于顶栏与轻提示，遮住整个页面 */
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 24px;
+  overflow: hidden;
+}
+
+.splash__inner {
+  display: grid;
+  justify-items: center;
+  gap: clamp(10px, 2.2vh, 22px);
+  width: min(720px, 100%);
+  text-align: center;
+}
+
+.splash__net {
+  width: min(560px, 78vw);
+  height: auto;
+  overflow: visible;
+}
+
+/* 连线：细线、低对比，拉开后由脚本逐条设置虚线长度 */
+.splash__lines line {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: .22;
+  stroke-linecap: round;
+}
+
+/* 节点：普通节点半透明，关键节点用暖橙做视觉中心 */
+.splash__nodes circle {
+  fill: currentColor;
+  opacity: .45;
+}
+
+.splash__nodes circle.splash__node--key {
+  fill: var(--amber);
+  opacity: .9;
+}
+
+.splash__name {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.45rem, 4.2vw, 2.3rem);
+  font-weight: 600;
+  letter-spacing: .06em;
+  line-height: 1.3;
+}
+
+.splash__tagline {
+  margin: 0;
+  font-size: clamp(.82rem, 2.1vw, .96rem);
+  letter-spacing: .16em;
+  opacity: .72;
+}
+
+/* 开屏期间禁止选中文字，避免拖拽出蓝色选区 */
+.splash { user-select: none; -webkit-user-select: none; }
+/* 关于“脚本失效”的兜底（不在这里用 CSS 动画实现）：
+   本站在禁用脚本时本来就无法渲染正文，因此开屏不承担“无 JS 可读”的职责。
+   实际采用两道保险：<head> 里的 <noscript> 样式（脚本不可用时直接隐藏开屏），
+   以及同一段内联脚本里的 6 秒定时器（脚本执行到一半出错时也会移除开屏）。 */

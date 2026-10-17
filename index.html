@@ -6,6 +6,30 @@
 <title>一份知识，两种表达 · 人工智能科普课堂</title>
 <meta name="description" content="面向儿童与老年人的双模式人工智能基础知识交互科普网页：五节课程、生活场景判断、互动答题与学习进度记录。">
 <meta name="author" content="《一份知识，两种表达》科普交互作品">
+  <!-- 首屏进入动画的预置标记：在样式表生效前打上 data-motion="pending"，
+       避免静态内容先以最终状态绘制、再被动画拉回（闪跳）。
+       带 ?motion=off、或系统开启“减少动态效果”时不设置，页面与之前完全一致。
+       兜底：若动画脚本未能运行，4.2 秒后自动解除隐藏；开屏元素也会被强制移除，
+       保证任何情况下都不会停留在遮罩上。 -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      var off = /(^|[?&])motion=off(&|$)/.test(window.location.search) ||
+        (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+      if (!off) {
+        d.setAttribute('data-motion', 'pending');
+        window.setTimeout(function () {
+          if (d.getAttribute('data-motion') === 'pending') d.setAttribute('data-motion', 'off');
+        }, 4200);
+      }
+      /* 开屏兜底：脚本异常时也不会一直停在遮罩上 */
+      window.setTimeout(function () {
+        var s = document.getElementById('splash');
+        if (s && s.parentNode) s.parentNode.removeChild(s);
+      }, 6000);
+    })();
+  </script>
+  <noscript><style>#splash { display: none !important; }</style></noscript>
   <!-- 样式按“令牌 → 模式 → 基础 → 组件 → 版式 → 互动 → 响应式”的顺序加载，与原内联样式表顺序一致 -->
   <link rel="stylesheet" href="styles/variables.css">
   <link rel="stylesheet" href="styles/modes.css">
@@ -14,9 +38,45 @@
   <link rel="stylesheet" href="styles/layout.css">
   <link rel="stylesheet" href="styles/interactions.css">
   <link rel="stylesheet" href="styles/responsive.css">
+  <!-- 首屏动画专用的预置隐藏与合成提示，必须最后加载 -->
+  <link rel="stylesheet" href="styles/motion.css">
+  <!-- 开屏（知识点亮）：只新增一个样式文件，不改动既有样式 -->
+  <link rel="stylesheet" href="styles/splash.css">
 </head>
 
 <body>
+<!-- 开屏「知识点亮」：进入网站时播放一次（约 2.3 秒），结束后由脚本移除。
+     纯装饰层，对读屏隐藏；无 JS 时由 <head> 的 noscript 样式隐藏。 -->
+<div class="splash" id="splash" aria-hidden="true">
+  <div class="splash__inner">
+    <svg class="splash__net" viewBox="0 0 720 360" role="presentation" focusable="false">
+      <g class="splash__lines">
+        <line x1="120" y1="200" x2="250" y2="120"/>
+        <line x1="250" y1="120" x2="372" y2="196"/>
+        <line x1="120" y1="200" x2="182" y2="324"/>
+        <line x1="182" y1="324" x2="300" y2="296"/>
+        <line x1="300" y1="296" x2="372" y2="196"/>
+        <line x1="372" y1="196" x2="500" y2="132"/>
+        <line x1="500" y1="132" x2="548" y2="292"/>
+        <line x1="548" y1="292" x2="372" y2="196"/>
+        <line x1="250" y1="120" x2="500" y2="132"/>
+        <line x1="300" y1="296" x2="548" y2="292"/>
+      </g>
+      <g class="splash__nodes">
+        <circle cx="120" cy="200" r="4"/>
+        <circle cx="250" cy="120" r="4.5"/>
+        <circle cx="182" cy="324" r="3.5"/>
+        <circle cx="300" cy="296" r="4"/>
+        <circle class="splash__node--key" cx="372" cy="196" r="6.5"/>
+        <circle class="splash__node--key" cx="500" cy="132" r="5.5"/>
+        <circle class="splash__node--key" cx="548" cy="292" r="5.5"/>
+      </g>
+    </svg>
+    <p class="splash__name">一份知识，两种表达</p>
+    <p class="splash__tagline">让科学知识，被不同的人轻松理解</p>
+  </div>
+</div>
+
 <a class="skip-link" href="#main">跳到主要内容</a>
 
 <!-- ===================== 顶部导航栏 ===================== -->
@@ -294,6 +354,18 @@
   <script src="scripts/services/progress.js"></script>
   <script src="scripts/state/session.js"></script>
   <script src="scripts/components/navigation.js"></script>
+  <!-- 首屏进入动画：GSAP 为本地文件（离线可用），动画模块在其后按 presets → entrance → motion 顺序加载；
+       动画只由 main.js 的 init() 调用一次，不参与任何渲染与业务逻辑 -->
+  <script src="scripts/vendor/gsap.min.js"></script>
+  <script src="scripts/vendor/ScrollTrigger.min.js"></script>
+  <script src="scripts/animations/presets.js"></script>
+  <script src="scripts/animations/entrance.js"></script>
+  <script src="scripts/animations/cards.js"></script>
+  <script src="scripts/animations/switch-view.js"></script>
+  <script src="scripts/animations/feedback.js"></script>
+  <script src="scripts/animations/scroll.js"></script>
+  <script src="scripts/animations/splash.js"></script>
+  <script src="scripts/animations/motion.js"></script>
   <script src="scripts/components/app-shell.js"></script>
   <script src="scripts/components/figure.js"></script>
   <script src="scripts/components/home-view.js"></script>

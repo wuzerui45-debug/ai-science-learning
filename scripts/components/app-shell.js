@@ -79,6 +79,10 @@
       App.renderHome();
     }
     updateDocTitle();
+    /* 动画钩子（第二阶段）：仅在引入动画模块时生效。内部自行判断
+       “路由是否真的变了”以及 ?motion=off / 减少动态效果，
+       不影响任何渲染与业务逻辑；没有该模块时这一行什么也不做。 */
+    if (App.motion) App.motion.afterRender(route);
   }
 
   function updateDocTitle() {

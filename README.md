@@ -49,8 +49,10 @@ ai-science-learning/
 │   ├── components.css             通用组件（按钮、标签、进度、插图占位、提示条、图注）
 │   ├── layout.css                 页面版式（顶栏、首页、课程目录、课程学习页）
 │   ├── interactions.css           互动练习、小测验、学习完成页、关于项目、页脚
-│   └── responsive.css             响应式（≤1080px / ≤860px / ≤768px / ≤480px 与减弱动效）
-└── scripts/                       脚本（按依赖顺序加载，共 22 个模块）
+│   ├── responsive.css             响应式（≤1080px / ≤860px / ≤768px / ≤480px 与减弱动效）
+│   ├── motion.css                 动画预置隐藏（只在首屏动画运行前生效，避免闪跳）
+│   └── splash.css                 开屏「知识点亮」的外观（配色复用现有令牌）
+└── scripts/                       脚本（按依赖顺序加载，共 32 个文件：22 个业务模块 + 10 个动画文件）
     ├── data/                      内容数据
     │   ├── courses-1.js           第 1—2 课（讲解、案例、场景、题目、总结）
     │   ├── courses-2.js           第 3—5 课
@@ -75,6 +77,18 @@ ai-science-learning/
     │   ├── practice.js            互动练习页
     │   ├── quiz.js                课程小测验
     │   └── result-view.js         学习完成页
+    ├── animations/                动画层（可整层删除，删掉后页面功能与外观不变）
+    │   ├── presets.js             动画参数表、开关判定（?motion=off / 减弱动效）、老年模式缩放
+    │   ├── entrance.js            首屏进入（眉标、标题、导语、三条要点、插图、图注）
+    │   ├── cards.js               课程卡片错开进入 + 桌面悬停反馈
+    │   ├── switch-view.js         课程内容切换、同讲翻步骤、目录整体进度条
+    │   ├── feedback.js            答题反馈块、选中项缩放、✓/✗ 标记、成绩面板、完成页分数
+    │   ├── scroll.js              ScrollTrigger：首页与关于页的滚动淡入（≥861px、非老年模式）
+    │   ├── splash.js              开屏「知识点亮」：只在一次新的页面加载时播放约 2.3 秒
+    │   └── motion.js              总调度：初始化、每次渲染后的分派、时间轴清理、断点同步
+    ├── vendor/
+    │   ├── gsap.min.js            GSAP 3.13.0（官方发行版，本地化，离线可用）
+    │   └── ScrollTrigger.min.js   ScrollTrigger 3.13.0（同上）
     ├── router.js                  hash 路由、地址参数（?mode= / ?big=）、刷新恢复
     ├── actions.js                 统一 data-action 事件分发、答题判定、键盘操作
     └── main.js                    入口：初始化顺序与事件监听注册
@@ -113,6 +127,18 @@ ai-science-learning/
 
 ---
 
+## 三之二、动画层（GSAP）
+
+动画全部集中在 `scripts/animations/`，与业务模块**单向依赖**：业务代码只在一个地方调用它——`app-shell.js` 渲染末尾的 `App.motion.afterRender(route)`；`main.js` 在初始化末尾调用 `App.motion.init()` 与 `App.splash.play()`。因此：
+
+- **删掉整层动画不影响任何功能**：`render()` 里的那行有 `if (App.motion)` 保护，脚本不存在时页面照常运行（这也是对照测试 `parity` 的基础）。
+- **关闭动画**：地址栏加 `?motion=off`（或系统开启"减少动态效果"），页面与加动画前逐字符一致。
+- **跳过开屏**：地址栏加 `?splash=off`（本地调试常用）。
+- **动画清单**：首屏进入 → 课程卡片/悬停 → 内容切换 → 答题反馈 → 滚动触发 → 开屏。
+- **参数集中在** `presets.js`：时长、位移、错开间隔、触发位置都在 `MOTION` 对象里，改节奏不用翻各个模块。
+- **清理约定**：所有时间轴登记在 `motion.js` 的 `live` 表，每次渲染前 `progress(1) + kill()`；ScrollTrigger 在路由切换/断点时 `destroy()` 后重建。动画只动 `transform` / `opacity`，颜色与禁用态仍由 CSS 与 `data-state` 负责。
+
+---
 ## 四、修改代码时的注意事项
 
 - **加内容**：课程文案改 `scripts/data/courses-1.js` / `courses-2.js`；界面措辞改 `scripts/data/ui-text.js`；插图改 `scripts/data/art.js`（每个场景是一个返回 SVG 字符串的函数）。

@@ -26,6 +26,13 @@
     if (typeof desktopQuery.addEventListener === 'function') desktopQuery.addEventListener('change', onDesktopChange);
     else if (typeof desktopQuery.addListener === 'function') desktopQuery.addListener(onDesktopChange);
     if (!parsed.ok) toast(ui().toastRoute);
+
+    /* 首屏进入动画：放在首次渲染之后执行一次；未引入动画模块时这一行什么也不做 */
+    if (App.motion) App.motion.init();
+
+    /* 开屏「知识点亮」：只在本次页面加载时播放一次；它在退出阶段调用 motion.playHero()
+       放行首屏动画，因此两者不会同时争夺同一元素 */
+    if (App.splash) App.splash.play();
   }
 
   if (document.readyState === 'loading') {
