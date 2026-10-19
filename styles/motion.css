@@ -11,19 +11,19 @@
    注意隐藏的层级与动画目标必须一一对应：
      眉标 / 标题 / 导语 → .masthead__main 的直接子元素（但排除要点列表本身）
      三条要点          → 各自 <li>（GSAP 逐条错开，若隐藏父级 <ul> 就看不到渐变）
-     主视觉 + 图注      → .masthead .figure（图注在其内部，随父级一起淡入）
+     交互实验          → #hlabRoot（主视觉下方的整块，由脚本插入）
    这里不涉及任何可点击控件，动画由 scripts/animations/*.js 负责，
    结束后会把行内样式清空。
    ============================================================================= */
 
 html[data-motion="pending"] .masthead__main > *:not(.masthead__points),
 html[data-motion="pending"] .masthead__points > li,
-html[data-motion="pending"] .masthead .figure {
+html[data-motion="pending"] #hlabRoot {
   opacity: 0;
 }
 
 html[data-motion="pending"] .masthead__main > *:not(.masthead__points),
 html[data-motion="pending"] .masthead__points > li,
-html[data-motion="pending"] .masthead .figure {
+html[data-motion="pending"] #hlabRoot {
   will-change: transform, opacity;
 }

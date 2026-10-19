@@ -43,6 +43,8 @@
   <link rel="stylesheet" href="styles/motion.css">
   <!-- 开屏（知识点亮）：只新增一个样式文件，不改动既有样式 -->
   <link rel="stylesheet" href="styles/splash.css">
+  <!-- 首页主视觉右栏的动物图片识别面板（拖入/点击示例或本地图片） -->
+  <link rel="stylesheet" href="styles/animal-lab.css">
 </head>
 
 <body>
@@ -135,15 +137,14 @@
             <li>它也常常帮得上忙：认脸、听写、看片子、找路——第三讲讲用途。</li>
           </ul>
         </div>
+        <!-- 右侧原插画位置：动物图片识别交互面板（内容由 animal-lab.js 渲染） -->
         <div class="masthead__aside">
-          <figure class="figure">
-            <div class="art-slot" data-art="hero" role="img" aria-label="插图：机器从大量猫的照片中找出共同特征，再对新照片作出判断"></div>
-            <figcaption class="figcap"><b>图 1</b> · 从样本到判断：机器看过大量猫的照片后找出共同特征，再对没见过的照片给出判断</figcaption>
-          </figure>
+          <section class="hlab" id="hlabRoot" data-hlab-root aria-labelledby="hlabTitle"></section>
         </div>
       </div>
 
       <hr class="rule">
+
 
       <section class="block" aria-labelledby="home-index-title">
         <div class="block__head">
@@ -348,6 +349,7 @@
   <script src="scripts/data/ui-text.js"></script>
   <script src="scripts/data/art.js"></script>
   <script src="scripts/data/captions.js"></script>
+  <script src="scripts/data/animals.js"></script>
   <script src="scripts/state/app-state.js"></script>
   <script src="scripts/utils/dom.js"></script>
   <script src="scripts/utils/text.js"></script>
@@ -371,6 +373,7 @@
   <script src="scripts/components/figure.js"></script>
   <script src="scripts/components/home-view.js"></script>
   <script src="scripts/components/lesson-view.js"></script>
+  <script src="scripts/components/animal-lab.js"></script>
   <script src="scripts/components/practice.js"></script>
   <script src="scripts/components/quiz.js"></script>
   <script src="scripts/components/result-view.js"></script>

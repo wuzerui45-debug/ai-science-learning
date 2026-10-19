@@ -63,16 +63,22 @@ html[data-mode="senior"] .segmented__btn { font-size: .95rem; padding: .55em 1em
 .view { padding: 2.4rem 0 3.2rem; }
 .view[hidden] { display: none; }
 
-/* 首页主视觉：问题标题 + 引题 + 简短答案，右侧/下方为解释图 */
-.masthead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr); gap: 2.4rem; align-items: start; padding-top: .6rem; }
+/* 首页主视觉：左侧问题标题 + 引题 + 简短答案，右侧是动物图片识别面板
+   （右栏就是原来放静态插画的 .masthead__aside，面板内容由 animal-lab.js 渲染）。 */
+.masthead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr);
+  gap: 2.4rem;
+  align-items: start;
+  padding-top: .6rem;
+}
 .masthead__main { min-width: 0; }
+.masthead__aside { min-width: 0; }
 .masthead__title { font-size: clamp(1.9rem, 3.9vw, 2.6rem); line-height: 1.14; margin: .1rem 0 .7rem; }
 .masthead__intro { font-size: 1.02rem; color: var(--ink-2); }
 .masthead__points { list-style: none; margin: 1.1rem 0 0; padding: 0; border-top: 1px solid var(--rule); }
 .masthead__points li { position: relative; padding: .6rem 0 .6rem 1.5em; border-bottom: 1px solid var(--rule); color: var(--ink-2); }
 .masthead__points li::before { content: "—"; position: absolute; left: 0; color: var(--amber-deep); }
-.masthead__aside { min-width: 0; }
-.masthead .figure { margin: 0; }
 
 /* 区块标题：左侧竖线，编辑式小标题 */
 .block { margin-top: 2.4rem; }

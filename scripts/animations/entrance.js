@@ -9,8 +9,8 @@
      .masthead__title          问题式主标题（两行）
      .masthead__intro          导语
      .masthead__points > li    三条简短回答
-     .masthead .figure         主视觉插图
-     .masthead .figcap         插图图注
+     #hlabRoot                 主视觉下方的交互实验（三个大框那块，由脚本插入）
+     .masthead .figure         其它版式若出现主视觉插图，同样能淡入
 
    实现要点：
      · 统一使用 fromTo：首屏元素在样式里被预置隐藏（opacity:0），
@@ -38,11 +38,11 @@
     const intro = pick(root, '.masthead__intro');
     const points = root.querySelectorAll('.masthead__points > li');
     const figure = pick(root, '.figure');
-    const caption = pick(root, '.figcap');
+    const lab = document.getElementById('hlabRoot');
     const pointList = Array.prototype.slice.call(points);
 
     /* 一个可动画的目标都没有：说明不是首页头版，直接放弃 */
-    if (!title && !figure && !pointList.length) return null;
+    if (!title && !figure && !lab && !pointList.length) return null;
 
     const tl = gsap.timeline({ defaults: { ease: MOTION.ease, overwrite: 'auto' } });
     const targets = [];
@@ -71,13 +71,9 @@
       targets.push.apply(targets, pointList);
     }
 
+    /* 主视觉下方的交互实验：与插图同一节奏，整块淡入（内部细节不动） */
+    if (lab) fadeInOne(lab, MOTION.hero.figure);
     if (figure) fadeInOne(figure, MOTION.hero.figure);
-
-    if (caption) {
-      const s = tune(MOTION.hero.caption);
-      tl.fromTo(caption, { autoAlpha: 0 }, { autoAlpha: 1, duration: s.duration }, s.at);
-      targets.push(caption);
-    }
 
     /* 结束：清空行内样式（transform / opacity / visibility 三种都清），
        让元素的最终外观完全回到 CSS 定义，避免留下会被后续检查读到的内联样式 */

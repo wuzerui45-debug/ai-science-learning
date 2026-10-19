@@ -23,8 +23,7 @@
       title:   { at: 0.04, duration: 0.55, y: 10 },
       intro:   { at: 0.18, duration: 0.45, y: 8 },
       points:  { at: 0.30, duration: 0.32, y: 6, stagger: 0.05 },
-      figure:  { at: 0.16, duration: 0.62, y: 8 },
-      caption: { at: 0.50, duration: 0.38, y: 0 }
+      figure:  { at: 0.16, duration: 0.62, y: 8 }
     },
     senior: {                       /* 老年友好模式：更短、更轻，位移几乎不可察 */
       durationScale: 0.7,

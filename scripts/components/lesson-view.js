@@ -119,6 +119,7 @@
     /* 误判类课程先看图（图示在左）；小结页边注排在正文之后，窄屏自然落到文末 */
     const bodyInner = (layout === 'left' ? aside + article : article + aside) + noteAside;
 
+
     body.innerHTML = `
       ${lessonHead(lesson, fill(ui().stepLabel, index + 1, total))}
       <div class="lesson-progress">
