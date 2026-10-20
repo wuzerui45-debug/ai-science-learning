@@ -54,7 +54,7 @@ ai-science-learning/
 │   ├── responsive.css             响应式（≤1080px / ≤860px / ≤768px / ≤480px 与减弱动效）
 │   ├── motion.css                 动画预置隐藏（只在首屏动画运行前生效，避免闪跳）
 │   ├── splash.css                 开屏「知识点亮」的外观（配色复用现有令牌）
-│   └── animal-lab.css             首页右栏三个框（训练样本 / 共同特征 / 判断结果）
+│   └── animal-lab.css             首页入口卡片 + 识别弹窗（内含三个框）
 └── scripts/                       脚本（按依赖顺序加载，共 32 个文件：22 个业务模块 + 10 个动画文件）
     ├── data/                      内容数据
     │   ├── courses-1.js           第 1—2 课（讲解、案例、场景、题目、总结）
@@ -81,7 +81,7 @@ ai-science-learning/
     │   ├── practice.js            互动练习页
     │   ├── quiz.js                课程小测验
     │   ├── result-view.js         学习完成页
-    │   └── animal-lab.js          首页右栏三个框：拖放/选图、按特征算分、三框联动
+    │   └── animal-lab.js          首页入口卡片 + 弹窗：拖放/选图、按特征算分、三框联动
     ├── animations/                动画层（可整层删除，删掉后页面功能与外观不变）
     │   ├── presets.js             动画参数表、开关判定（?motion=off / 减弱动效）、老年模式缩放
     │   ├── entrance.js            首屏进入（眉标、标题、导语、三条要点、交互实验区）
@@ -99,7 +99,7 @@ ai-science-learning/
     └── main.js                    入口：初始化顺序与事件监听注册
 ```
 
-`scripts/components/animal-lab.js` 挂在**首页课程标题右侧的原插画容器**（`.masthead__aside`）里：拖入或点击示例照片、或选一张本地图片，右侧面板立即给出猫 / 狗 / 兔三条教学模拟分数与特征解释；由 `home-view.js` 在渲染首页时挂载，其它页面完全不加载它。
+`scripts/components/animal-lab.js` 在**首页课程标题右侧的原插画容器**（`.masthead__aside`）里渲染一张入口卡片；点击卡片打开弹窗（`#hlabModal`），弹窗内是三个独立框：训练样本 → 共同特征 → 模型识别。把照片拖进最右侧的蓝色虚线区（或点它选本地图片），三个框立即联动更新，没有训练流程。由 `home-view.js` 在渲染首页时挂载，其它页面完全不加载它。
 
 `assets/` 目录没有创建：原项目的 45 张插画全部由内嵌 SVG 代码绘制，没有位图或图标文件，单独建一个空目录没有意义。
 

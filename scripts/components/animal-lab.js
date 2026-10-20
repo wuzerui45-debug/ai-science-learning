@@ -1,21 +1,21 @@
 /* =============================================================================
-   scripts/components/animal-lab.js —— 首页右栏的三个框：训练样本 / 共同特征 / 判断结果
+   scripts/components/animal-lab.js —— 首页入口卡片 + 动物识别弹窗
 
-   位置：首页课程标题右侧（原来的 .masthead__aside），三个框横向并排，各是一个独立卡片。
-   交互：把照片拖进最右侧「判断结果」框的蓝色虚线区，或点它选一张本地图片；
-        放入后立即判断，三个框同时更新：
-          · 左「训练样本」：判断时参考的那一类六张训练照片（规则来自它们，不是现场训练）
-          · 中「共同特征」：这一类的特征统计（几张照片有、是否与其他类别共有）
-          · 右「判断结果」：照片预览、猫/狗/兔三条分数、判定与解释
-        没有“开始训练”这一步，也不需要先选类别。
+   首页：课程标题右侧放一张可点击的入口卡片（#hlabRoot），不再直接展示三个框。
+   点击后：打开居中弹窗（#hlabModal），弹窗里就是原来那三个独立框：
+           训练样本 → 共同特征 → 模型识别。
 
-   诚实性：项目里没有真正的图像识别模型。
-     · 示例照片有预设的结构化特征，按**事先设定的教学规则**算分并解释；
-     · 本地图片无法分析像素，只做预览，明确写出“无法判断”，不编造结果。
+   交互：把照片拖进「模型识别」的蓝色虚线区，或点它选一张本地图片；
+        放入后立即判断，三个框同时更新。没有训练流程、没有“开始训练”。
+   诚实性：项目里没有图像识别模型——示例照片按预设教学规则算分，本地图片只预览并
+        明确写“无法识别”，不编造结果。
 
-   教学规则：每类六张训练照片里至少四张都有的特征即该类的特征；
+   教学规则：每类六张训练照片里至少四张都有的特征即该类特征；
       raw(C) = 命中数 / 该类特征数，三类归一化成合计 100 的百分比；
       raw 最高并列 → “无法可靠区分”。分数只叫「教学模拟匹配分数」。
+
+   弹窗约定：只创建一次实例；Esc / 关闭按钮 / 点遮罩都能关闭；点弹窗内部不关闭；
+     打开时锁背景滚动、焦点进入弹窗；关闭后焦点回到入口卡片。
    ============================================================================= */
 (function (App) {
   'use strict';
@@ -42,6 +42,10 @@
   };
 
   let bound = false;
+  let modal = null;                /* 弹窗实例（只创建一次） */
+  let lastFocus = null;
+  let scrollLock = null;
+  let closing = false;
 
   /* ---------- 文案 ---------- */
   function t() {
@@ -86,11 +90,10 @@
     imgs.forEach(function (img) {
       img.features.forEach(function (f) { count[f] = (count[f] || 0) + 1; });
     });
-    const keys = FEATURES.map(function (f) { return f.key; })
-      .filter(function (k) { return (count[k] || 0) >= MAJORITY; });
     return {
       classId: classId,
-      features: keys,
+      features: FEATURES.map(function (f) { return f.key; })
+        .filter(function (k) { return (count[k] || 0) >= MAJORITY; }),
       images: imgs
     };
   }
@@ -101,7 +104,7 @@
     return classes;
   }
 
-  /* 某一类六张照片的特征分布（中间框用） */
+  /* 某一类六张照片的特征分布 */
   function analyse(classId) {
     const imgs = TRAIN[classId] || [];
     const rows = FEATURES.map(function (f) {
@@ -111,8 +114,7 @@
         count: has.filter(Boolean).length,
         total: imgs.length,
         has: has,
-        owners: FEATURE_CLASSES[f.key] || [],
-        inModel: has.filter(Boolean).length >= MAJORITY
+        owners: FEATURE_CLASSES[f.key] || []
       };
     }).filter(function (r) { return r.count > 0; });
     rows.sort(function (a, b) {
@@ -123,7 +125,6 @@
     return rows;
   }
 
-  /* 把比例凑成合计 100 的整数（最大余数法） */
   function roundTo100(values) {
     const total = values.reduce(function (s, v) { return s + v; }, 0);
     if (total <= 0) return values.map(function () { return 0; });
@@ -142,7 +143,6 @@
     return out;
   }
 
-  /* ---------- 计算：一张示例照片 → 三类的百分比 ---------- */
   function classify(item) {
     if (!item) return null;
     const m = model();
@@ -189,7 +189,6 @@
     };
   }
 
-  /* 左框与中框展示哪一类：优先最高分类别；并列时取第一个并列类别 */
   function focusClass(result) {
     if (!result) return null;
     if (result.best) return result.best.classId;
@@ -218,14 +217,14 @@
     lab.fileName = null;
     lab.dragging = null;
     setMessage(null);
-    repaint('sample:' + id);
+    refreshBody('sample:' + id);
   }
 
   function loadFile(file) {
     if (!file) return;
     if (!/^image\//.test(file.type || '')) {
       setMessage(t().badFile, 'warn');
-      repaint('zone');
+      refreshBody('zone');
       return;
     }
     revokeUrl();
@@ -235,7 +234,7 @@
     lab.fileUrl = (window.URL && URL.createObjectURL) ? URL.createObjectURL(file) : null;
     lab.dragging = null;
     setMessage(null);
-    repaint('zone');
+    refreshBody('zone');
   }
 
   function clearImage(focusKey) {
@@ -244,16 +243,30 @@
     lab.sampleId = null;
     lab.fileName = null;
     setMessage(null);
-    repaint(focusKey || 'zone');
+    refreshBody(focusKey || 'zone');
   }
 
-  /* ---------- 渲染：三个框 ---------- */
-  function head() {
-    return '<h2 class="hlab__title" id="hlabTitle">' + esc(t().title) + '</h2>' +
-      '<p class="hlab__lead">' + esc(t().lead) + '</p>';
+  /* ---------- 首页入口卡片 ---------- */
+  function cardHtml() {
+    const art = function (id) {
+      const img = (TRAIN[id] || [])[0];
+      return '<span class="hlab-card__art" aria-hidden="true">' + (img ? img.art : '') + '</span>';
+    };
+    return '<span class="hlab-card__kicker">' + esc(t().cardKicker) + '</span>' +
+      '<span class="hlab-card__title">' + esc(t().cardTitle) + '</span>' +
+      '<span class="hlab-card__desc">' + esc(t().cardDesc) + '</span>' +
+      '<span class="hlab-card__arts" aria-hidden="true">' + art('cat') + art('dog') + art('rabbit') + '</span>' +
+      '<span class="hlab-card__foot">' +
+      '<span class="hlab-card__tags">' + esc(t().cardTags) + '</span>' +
+      /* 真正的按钮：键盘可达、可被读屏识别；“整张卡片也能点”由卡片的点击处理兜底 */
+      '<button type="button" class="hlab-card__cta" data-hlab-open ' +
+      'aria-haspopup="dialog" aria-controls="hlabModal">' +
+      '<span>' + esc(t().cardCta) + '</span>' +
+      '<span class="hlab-card__arrow" aria-hidden="true">↗</span></button>' +
+      '</span>';
   }
 
-  /* 左框：判断参考的那一类六张训练照片 */
+  /* ---------- 弹窗内的三个框 ---------- */
   function samplesBox(focus) {
     const imgs = focus ? (TRAIN[focus] || []) : [];
     let cells;
@@ -272,12 +285,10 @@
     return '<div class="hlab__box hlab__box--samples">' +
       '<div class="hlab__box-head"><h3 class="hlab__box-title">' + esc(t().samplesTitle) + '</h3>' +
       '<span class="hlab__box-tag">' + (imgs.length ? t().sixOfSix : '0 / 6') + '</span></div>' +
-      cells +
-      '<p class="hlab__box-foot">' + esc(cap) + '</p>' + note +
+      cells + '<p class="hlab__box-foot">' + esc(cap) + '</p>' + note +
       '</div>';
   }
 
-  /* 中框：这一类的特征分布 */
   function featuresBox(focus) {
     let body;
     let tag = '—';
@@ -305,11 +316,9 @@
     }
     return '<div class="hlab__box hlab__box--features">' +
       '<div class="hlab__box-head"><h3 class="hlab__box-title">' + esc(t().featTitle) + '</h3>' +
-      '<span class="hlab__box-tag">' + esc(tag) + '</span></div>' +
-      body + '</div>';
+      '<span class="hlab__box-tag">' + esc(tag) + '</span></div>' + body + '</div>';
   }
 
-  /* 右框：虚线接收区 + 三条结果 */
   function zoneBody() {
     if (lab.kind === 'sample') {
       const item = sampleById(lab.sampleId);
@@ -416,49 +425,167 @@
       '</button>';
   }
 
-  function samplesRow() {
-    return '<div class="hlab__samples">' +
-      '<p class="hlab__samples-label">' + esc(t().samplesLabel) + '</p>' +
-      '<div class="hlab__chips">' + TEST.map(sampleChip).join('') + '</div>' +
-      '</div>';
-  }
-
-  function inner() {
+  function bodyHtml() {
     const item = lab.kind === 'sample' ? sampleById(lab.sampleId) : null;
     const result = item ? classify(item) : null;
     const focus = focusClass(result);
-    return head() +
-      '<div class="hlab__flow">' + samplesBox(focus) + featuresBox(focus) + testBox(result) + '</div>' +
-      samplesRow();
+    return '<div class="hlab__flow">' + samplesBox(focus) + featuresBox(focus) + testBox(result) + '</div>';
   }
 
-  /* ---------- 轻量反馈 ---------- */
-  function animate() {
-    const gsap = window.gsap;
-    if (!gsap || App.motionOff()) return;
-    const root = document.getElementById('hlabRoot');
-    if (!root) return;
-    const bars = root.querySelectorAll('[data-flash-bar]');
-    if (!bars.length) return;
-    const ease = (App.MOTION && App.MOTION.ease) || 'power2.out';
-    const tw = gsap.fromTo(bars, { scaleX: 0, transformOrigin: '0% 50%' },
-      { scaleX: 1, duration: 0.38, stagger: 0.05, ease: ease });
-    tw.eventCallback('onComplete', function () {
-      try { gsap.set(bars, { clearProps: 'transform,transformOrigin,opacity' }); } catch (e) { /* 节点已换 */ }
-    });
+  function footHtml() {
+    return '<div class="hlab__samples">' +
+      '<p class="hlab__samples-label">' + esc(t().samplesLabel) + '</p>' +
+      '<div class="hlab__chips">' + TEST.map(sampleChip).join('') + '</div>' +
+      '</div>' +
+      '<p class="hlab__foot-note">' + esc(t().footNote) + '</p>';
   }
 
-  function repaint(focusKey) {
-    const root = document.getElementById('hlabRoot');
-    if (!root) return;
-    root.innerHTML = inner();
+  /* ---------- 弹窗 ---------- */
+  function ensureModal() {
+    if (modal) return modal;
+    modal = document.createElement('div');
+    modal.className = 'hlab-modal';
+    modal.id = 'hlabModal';
+    modal.hidden = true;
+    modal.innerHTML =
+      '<div class="hlab-modal__backdrop" data-hlab-close></div>' +
+      '<div class="hlab-modal__dialog" id="hlabDialog" role="dialog" aria-modal="true" ' +
+      'aria-labelledby="hlabModalTitle" tabindex="-1">' +
+      '<div class="hlab-modal__head">' +
+      '<div class="hlab-modal__headtext">' +
+      '<h2 class="hlab-modal__title" id="hlabModalTitle"></h2>' +
+      '<p class="hlab-modal__sub"></p>' +
+      '</div>' +
+      '<button type="button" class="hlab-modal__close" data-hlab-close data-focus-id="close">' +
+      '<span aria-hidden="true">×</span></button>' +
+      '</div>' +
+      '<div class="hlab-modal__body" data-hlab-body></div>' +
+      '<div class="hlab-modal__foot" data-hlab-foot></div>' +
+      '</div>';
+    document.body.appendChild(modal);
+    return modal;
+  }
+
+  function refreshText() {
+    if (!modal) return;
+    modal.querySelector('.hlab-modal__title').textContent = t().modalTitle;
+    modal.querySelector('.hlab-modal__sub').textContent = t().modalSub;
+    modal.querySelector('.hlab-modal__close').setAttribute('aria-label', t().closeLabel);
+    modal.querySelector('[data-hlab-foot]').innerHTML = footHtml();
+  }
+
+  function refreshBody(focusKey) {
+    const body = modal && modal.querySelector('[data-hlab-body]');
+    if (!body) return;
+    /* 重绘会重置滚动容器：先记住位置，画完再放回去，换照片时内容不会跳回顶部 */
+    const keepTop = body.scrollTop;
+    body.innerHTML = bodyHtml();
+    body.scrollTop = keepTop;
     if (focusKey) {
-      const el = root.querySelector('[data-focus-id="' + focusKey + '"]');
+      const el = modal.querySelector('[data-focus-id="' + focusKey + '"]');
       if (el && typeof el.focus === 'function') {
         try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
       }
+      body.scrollTop = keepTop;
     }
-    if (lab.kind === 'sample') animate();
+    if (lab.kind === 'sample') animateBars();
+  }
+
+  function lockScroll() {
+    if (scrollLock) return;
+    const d = document.documentElement;
+    const gap = window.innerWidth - d.clientWidth;
+    scrollLock = { overflow: d.style.overflow, padding: document.body.style.paddingRight };
+    d.style.overflow = 'hidden';
+    if (gap > 0) document.body.style.paddingRight = gap + 'px';
+  }
+
+  function unlockScroll() {
+    if (!scrollLock) return;
+    document.documentElement.style.overflow = scrollLock.overflow;
+    document.body.style.paddingRight = scrollLock.padding;
+    scrollLock = null;
+  }
+
+  function animateIn() {
+    const gsap = window.gsap;
+    if (!gsap || App.motionOff()) return;
+    const dialog = modal.querySelector('.hlab-modal__dialog');
+    const back = modal.querySelector('.hlab-modal__backdrop');
+    const ease = (App.MOTION && App.MOTION.ease) || 'power2.out';
+    gsap.killTweensOf([dialog, back]);
+    gsap.fromTo(back, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: ease });
+    gsap.fromTo(dialog, { opacity: 0, y: 12 }, {
+      opacity: 1, y: 0, duration: 0.24, ease: ease,
+      onComplete: function () { gsap.set([dialog, back], { clearProps: 'opacity,transform' }); }
+    });
+  }
+
+  function animateBars() {
+    const gsap = window.gsap;
+    if (!gsap || App.motionOff() || !modal) return;
+    const bars = modal.querySelectorAll('[data-flash-bar]');
+    if (!bars.length) return;
+    const ease = (App.MOTION && App.MOTION.ease) || 'power2.out';
+    gsap.fromTo(bars, { scaleX: 0, transformOrigin: '0% 50%' },
+      {
+        scaleX: 1, duration: 0.38, stagger: 0.05, ease: ease,
+        onComplete: function () {
+          try { gsap.set(bars, { clearProps: 'transform,transformOrigin' }); } catch (e) { /* 节点已换 */ }
+        }
+      });
+  }
+
+  function isOpen() {
+    return !!(modal && !modal.hidden);
+  }
+
+  function openModal() {
+    const el = ensureModal();
+    if (!el.hidden) return;
+    lastFocus = document.activeElement;
+    closing = false;
+    el.hidden = false;
+    refreshText();
+    refreshBody();
+    lockScroll();
+    const dialog = el.querySelector('.hlab-modal__dialog');
+    if (dialog && typeof dialog.focus === 'function') {
+      try { dialog.focus({ preventScroll: true }); } catch (e) { dialog.focus(); }
+    }
+    animateIn();
+  }
+
+  function closeModal() {
+    if (!isOpen() || closing) return;
+    closing = true;
+    const el = modal;
+    const dialog = el.querySelector('.hlab-modal__dialog');
+    const back = el.querySelector('.hlab-modal__backdrop');
+    const gsap = window.gsap;
+    const done = function () {
+      /* 无论有没有播动画，都把行内样式清干净，避免留下 opacity / transform */
+      if (gsap) {
+        try {
+          gsap.killTweensOf([dialog, back]);
+          gsap.set([dialog, back], { clearProps: 'opacity,transform,visibility' });
+        } catch (e) { /* 忽略 */ }
+      }
+      el.hidden = true;
+      closing = false;
+      unlockScroll();
+      if (lastFocus && typeof lastFocus.focus === 'function') {
+        try { lastFocus.focus({ preventScroll: true }); } catch (e) { lastFocus.focus(); }
+      }
+      lastFocus = null;
+    };
+    if (gsap && !App.motionOff()) {
+      gsap.killTweensOf([dialog, back]);
+      gsap.to(dialog, { opacity: 0, y: 8, duration: 0.18, ease: 'power2.in', onComplete: done });
+      gsap.to(back, { opacity: 0, duration: 0.18 });
+    } else {
+      done();
+    }
   }
 
   /* ---------- 交互 ---------- */
@@ -468,22 +595,41 @@
   }
 
   function onClick(e) {
-    const root = e.target.closest ? e.target.closest('[data-hlab-root]') : null;
-    if (!root) return;
+    const scope = e.target.closest ? e.target.closest('#hlabRoot, #hlabModal') : null;
+    if (!scope) return;
 
-    if (e.target.closest && e.target.closest('[data-hlab-act="clear"]')) { clearImage('zone'); return; }
-    const chip = e.target.closest && e.target.closest('[data-hlab-sample]');
+    if (scope.id === 'hlabRoot') { openModal(); return; }
+    if (e.target.closest('[data-hlab-close]')) { closeModal(); return; }
+    if (e.target.closest('[data-hlab-act="clear"]')) { clearImage('zone'); return; }
+    const chip = e.target.closest('[data-hlab-sample]');
     if (chip) { pickSample(chip.getAttribute('data-hlab-sample')); return; }
-    const zone = e.target.closest && e.target.closest('[data-hlab-zone="drop"]');
+    const zone = e.target.closest('[data-hlab-zone="drop"]');
     if (zone) openPicker();
   }
 
   function onKeyDown(e) {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    const zone = e.target && e.target.getAttribute && e.target.getAttribute('data-hlab-zone');
-    if (!zone) return;
-    e.preventDefault();
-    openPicker();
+    if (!isOpen()) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeModal();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const focusables = modal.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+    const dialog = modal.querySelector('.hlab-modal__dialog');
+    if (e.shiftKey && (active === first || active === dialog)) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+    }
   }
 
   function onChange(e) {
@@ -560,6 +706,7 @@
     document.addEventListener('dragleave', onDragLeave);
     document.addEventListener('drop', onDrop);
     document.addEventListener('dragend', onDragEnd);
+    window.addEventListener('hashchange', function () { if (isOpen()) closeModal(); });
   }
 
   /* ---------- 对外接口 ---------- */
@@ -567,13 +714,21 @@
     const host = document.getElementById('hlabRoot');
     if (!host) return false;
     bind();
-    host.innerHTML = inner();
+    host.innerHTML = cardHtml();
+    ensureModal();
+    if (isOpen()) {
+      refreshText();
+      refreshBody();
+    }
     return true;
   }
 
   Object.assign(App, {
     animalLab: {
       mount: mount,
+      open: openModal,
+      close: closeModal,
+      isOpen: isOpen,
       state: lab,
       compute: {
         model: model,
