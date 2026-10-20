@@ -507,6 +507,10 @@
     scrollLock = null;
   }
 
+  /* GSAP 3.12+ 会把位移写成独立的 translate / rotate / scale 属性，
+     clearProps 里必须一起清掉，否则节点上会留下 translate: none */
+  const CLEAN = 'opacity,transform,translate,rotate,scale,visibility';
+
   function animateIn() {
     const gsap = window.gsap;
     if (!gsap || App.motionOff()) return;
@@ -515,10 +519,16 @@
     const ease = (App.MOTION && App.MOTION.ease) || 'power2.out';
     gsap.killTweensOf([dialog, back]);
     gsap.fromTo(back, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: ease });
-    gsap.fromTo(dialog, { opacity: 0, y: 12 }, {
+    const tw = gsap.fromTo(dialog, { opacity: 0, y: 12 }, {
       opacity: 1, y: 0, duration: 0.24, ease: ease,
-      onComplete: function () { gsap.set([dialog, back], { clearProps: 'opacity,transform' }); }
+      onComplete: function () { gsap.set([dialog, back], { clearProps: CLEAN }); }
     });
+    /* 兜底：标签页被节流时 rAF 可能停摆，300ms 内没播完就直接到终点，
+       否则弹窗会停在半透明状态 */
+    window.setTimeout(function () {
+      if (!tw || tw.progress() >= 1) return;
+      try { tw.progress(1); } catch (e) { /* 已销毁 */ }
+    }, 600);
   }
 
   function animateBars() {
@@ -563,12 +573,17 @@
     const dialog = el.querySelector('.hlab-modal__dialog');
     const back = el.querySelector('.hlab-modal__backdrop');
     const gsap = window.gsap;
+    let finished = false;
+    let fallback = 0;
     const done = function () {
-      /* 无论有没有播动画，都把行内样式清干净，避免留下 opacity / transform */
+      if (finished) return;
+      finished = true;
+      window.clearTimeout(fallback);
+      /* 无论有没有播动画，都把行内样式清干净（含 translate / rotate / scale） */
       if (gsap) {
         try {
           gsap.killTweensOf([dialog, back]);
-          gsap.set([dialog, back], { clearProps: 'opacity,transform,visibility' });
+          gsap.set([dialog, back], { clearProps: CLEAN });
         } catch (e) { /* 忽略 */ }
       }
       el.hidden = true;
@@ -583,6 +598,8 @@
       gsap.killTweensOf([dialog, back]);
       gsap.to(dialog, { opacity: 0, y: 8, duration: 0.18, ease: 'power2.in', onComplete: done });
       gsap.to(back, { opacity: 0, duration: 0.18 });
+      /* 兜底：rAF 被节流、或补间被外部打断时，600ms 后强制关闭，弹窗不可能关不掉 */
+      fallback = window.setTimeout(done, 600);
     } else {
       done();
     }
